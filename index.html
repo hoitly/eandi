@@ -1,0 +1,2823 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#043B72">
+<title>퇴직연금, 3분 진단</title>
+<style>
+  /* ============================================================
+     Mirae Asset Design System tokens (subset)
+     ============================================================ */
+  @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+
+  :root {
+    --ma-brand-orange: #F58220;
+    --ma-brand-blue:   #043B72;
+    --ma-action-primary-hover: #032E59;
+    --ma-action-primary-pressed: #022445;
+    --ma-action-accent-hover: #DC6F11;
+    --ma-action-accent-pressed: #B85C0A;
+
+    --ma-neutral-900: #111827;
+    --ma-neutral-800: #1F2937;
+    --ma-neutral-700: #48535B;
+    --ma-neutral-500: #84888B;
+    --ma-neutral-400: #A0A6A8;
+    --ma-neutral-300: #CDCECB;
+    --ma-neutral-200: #E5E4E1;
+    --ma-bg-subtle:   #F8FAFC;
+    --ma-bg-muted:    #ECEFF4;
+
+    --ma-success: #007A5A;
+    --ma-warning: #CB6015;
+    --ma-danger:  #B42318;
+    --ma-info:    #0086B8;
+    --ma-focus-ring: #00A9CE;
+
+    --ma-signal-rise: #C0392B;
+    --ma-signal-fall: #1F6FB2;
+
+    --ma-surface-default: #FFFFFF;
+    --ma-bg-default: #FFFFFF;
+    --ma-text-strong:  var(--ma-neutral-900);
+    --ma-text-default: var(--ma-neutral-800);
+    --ma-text-muted:   var(--ma-neutral-700);
+    --ma-text-subtle:  var(--ma-neutral-500);
+    --ma-text-disabled:var(--ma-neutral-400);
+    --ma-text-inverse: #FFFFFF;
+    --ma-text-brand:   var(--ma-brand-blue);
+    --ma-border-default: var(--ma-neutral-300);
+    --ma-border-muted:   var(--ma-neutral-200);
+
+    --ma-font-sans: "Pretendard Variable", Pretendard, "Noto Sans KR",
+                    "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+
+    --ma-radius-sm: 4px;
+    --ma-radius-md: 6px;
+    --ma-radius-lg: 8px;
+    --ma-radius-full: 999px;
+
+    --ma-shadow-sm: 0 1px 2px rgba(17, 24, 39, .08);
+    --ma-shadow-md: 0 8px 24px rgba(17, 24, 39, .12);
+
+    --ma-duration-hover:   120ms;
+    --ma-duration-popover: 160ms;
+    --ma-duration-modal:   200ms;
+    --ma-ease-out: cubic-bezier(.2, .8, .2, 1);
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    font-family: var(--ma-font-sans);
+    background: var(--ma-bg-muted);
+    color: var(--ma-text-default);
+    line-height: 1.5;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Shell */
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    position: relative;
+    background: var(--ma-bg-default);
+    overflow: hidden;
+  }
+
+  /* Brand bar */
+  .brand-bar {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 64px;
+    background: var(--ma-bg-default);
+    border-bottom: 1px solid var(--ma-border-muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 90;
+  }
+  .brand-bar img { height: 44px; display: block; }
+  .brand-step {
+    font-size: 11px;
+    color: var(--ma-text-subtle);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .brand-step strong { color: var(--ma-text-strong); font-weight: 700; }
+
+  /* Progress */
+  .progress-bar {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 2px;
+    background: var(--ma-border-muted);
+    z-index: 91;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--ma-brand-orange);
+    width: 0%;
+    transition: width 320ms var(--ma-ease-out);
+  }
+
+  /* Screen */
+  .screen {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 96px 20px 28px;
+  }
+  .screen.active {
+    display: flex;
+    animation: fadeIn 240ms var(--ma-ease-out) both;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Hook screen */
+  .screen-hook {
+    justify-content: center;
+    text-align: left;
+    background: var(--ma-bg-default);
+  }
+  .hook-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ma-brand-blue);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    margin-bottom: 20px;
+  }
+  .hook-eyebrow::before {
+    content: '';
+    width: 20px;
+    height: 2px;
+    background: var(--ma-brand-orange);
+  }
+  .hook-headline {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    line-height: 1.4;
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+  .hook-number-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .hook-number {
+    font-size: 88px;
+    font-weight: 800;
+    color: var(--ma-brand-blue);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .hook-unit {
+    font-size: 22px;
+    color: var(--ma-text-default);
+    font-weight: 700;
+  }
+  .hook-desc {
+    font-size: 14px;
+    color: var(--ma-text-muted);
+    margin-bottom: 4px;
+  }
+  .hook-period {
+    font-size: 15px;
+    color: var(--ma-text-default);
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+  .hook-period strong { color: var(--ma-brand-blue); font-weight: 700; }
+
+  .hook-card {
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-left: 3px solid var(--ma-brand-orange);
+    border-radius: var(--ma-radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 24px;
+  }
+  .hook-card-text {
+    font-size: 14px;
+    color: var(--ma-text-default);
+    line-height: 1.65;
+  }
+  .hook-card-text strong { color: var(--ma-brand-blue); font-weight: 700; }
+  .hook-source {
+    border-top: 1px solid var(--ma-border-muted);
+    margin-top: 10px;
+    padding-top: 8px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--ma-text-subtle);
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-secondary,
+  .btn-orange {
+    border-radius: var(--ma-radius-md);
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background var(--ma-duration-hover) var(--ma-ease-out),
+                border-color var(--ma-duration-hover) var(--ma-ease-out);
+    font-family: inherit;
+    letter-spacing: -0.005em;
+  }
+  .btn-primary {
+    background: var(--ma-brand-blue);
+    color: #fff;
+    border: 1px solid var(--ma-brand-blue);
+  }
+  .btn-primary:hover { background: var(--ma-action-primary-hover); border-color: var(--ma-action-primary-hover); }
+  .btn-primary:active { background: var(--ma-action-primary-pressed); }
+  .btn-secondary {
+    background: #fff;
+    color: var(--ma-brand-blue);
+    border: 1px solid var(--ma-border-default);
+  }
+  .btn-secondary:hover { background: var(--ma-bg-subtle); border-color: var(--ma-brand-blue); }
+  .btn-secondary:active { background: var(--ma-bg-muted); }
+  .btn-orange {
+    background: var(--ma-brand-orange);
+    color: #fff;
+    border: 1px solid var(--ma-brand-orange);
+  }
+  .btn-orange:hover { background: var(--ma-action-accent-hover); border-color: var(--ma-action-accent-hover); }
+  .btn-orange:active { background: var(--ma-action-accent-pressed); }
+
+  button:disabled:not(.correct):not(.wrong) {
+    background: var(--ma-bg-muted) !important;
+    color: var(--ma-text-disabled) !important;
+    border-color: var(--ma-border-muted) !important;
+    cursor: not-allowed;
+  }
+  button:disabled.correct,
+  button:disabled.wrong { cursor: default; }
+
+  /* Screen header */
+  .screen-header { margin-bottom: 20px; }
+  .screen-label {
+    font-size: 11px;
+    color: var(--ma-brand-blue);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    margin-bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .screen-label::before {
+    content: '';
+    width: 16px; height: 2px;
+    background: var(--ma-brand-orange);
+  }
+  .screen-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    line-height: 1.35;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .screen-subtitle {
+    font-size: 14px;
+    color: var(--ma-text-muted);
+    line-height: 1.55;
+  }
+
+  /* Race */
+  .race-container {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 18px 16px 14px;
+    margin: 12px 0;
+  }
+  .race-year {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ma-text-muted);
+    margin-bottom: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .race-year strong { color: var(--ma-brand-orange); font-weight: 700; }
+
+  .race-people {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .race-person {
+    text-align: left;
+    padding: 12px;
+    border-radius: var(--ma-radius-lg);
+    border: 1px solid var(--ma-border-muted);
+    background: var(--ma-bg-subtle);
+  }
+  .race-person.active {
+    background: #FFF4E8;
+    border-color: var(--ma-brand-orange);
+  }
+  .race-emoji {
+    font-size: 30px;
+    line-height: 1;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .race-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    margin-bottom: 2px;
+  }
+  .race-mode {
+    font-size: 11px;
+    color: var(--ma-text-muted);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .race-amount {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--ma-text-strong);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+    transition: color 200ms;
+  }
+  .race-person.passive .race-amount { color: var(--ma-text-muted); }
+  .race-person.active .race-amount { color: var(--ma-brand-orange); }
+
+  .race-bar-row {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .race-bar-row:last-child { margin-bottom: 0; }
+  .race-bar-name {
+    font-size: 11px;
+    color: var(--ma-text-muted);
+    font-weight: 600;
+  }
+  .race-bar-wrap {
+    background: var(--ma-bg-muted);
+    border-radius: var(--ma-radius-full);
+    height: 8px;
+    overflow: hidden;
+  }
+  .race-bar {
+    height: 100%;
+    width: 0%;
+    transition: width 80ms linear;
+    border-radius: var(--ma-radius-full);
+  }
+  #bar1 { background: var(--ma-neutral-500); }
+  #bar2 { background: var(--ma-brand-orange); }
+  .race-bar-label {
+    font-size: 11px;
+    color: var(--ma-text-muted);
+    text-align: right;
+  }
+
+  .race-conclusion {
+    background: var(--ma-brand-blue);
+    color: #fff;
+    border-radius: var(--ma-radius-lg);
+    padding: 18px 20px;
+    margin: 14px 0 16px;
+    text-align: left;
+    display: none;
+  }
+  .race-conclusion.show { display: block; animation: fadeIn 320ms var(--ma-ease-out); }
+  .race-conclusion-num {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--ma-brand-orange);
+    margin-bottom: 4px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .race-conclusion-text {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.55;
+  }
+  .race-conclusion-text strong { color: #fff; font-weight: 700; }
+  .race-bridge {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.55;
+  }
+  .race-bridge strong { color: #fff; font-weight: 700; }
+
+  /* Quiz */
+  .quiz-progress {
+    text-align: center;
+    color: var(--ma-text-muted);
+    font-size: 12px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .quiz-progress strong { color: var(--ma-brand-blue); font-weight: 700; }
+  .quiz-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+  .quiz-dot {
+    width: 28px;
+    height: 3px;
+    background: var(--ma-border-muted);
+    border-radius: var(--ma-radius-sm);
+    transition: background var(--ma-duration-hover);
+  }
+  .quiz-dot.active { background: var(--ma-brand-orange); }
+  .quiz-dot.done { background: var(--ma-brand-blue); }
+
+  .quiz-question {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    margin: 8px 0 24px;
+    line-height: 1.45;
+    text-align: left;
+    letter-spacing: -0.005em;
+  }
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .quiz-option {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-md);
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ma-text-strong);
+    cursor: pointer;
+    text-align: left;
+    transition: background var(--ma-duration-hover), border-color var(--ma-duration-hover);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .quiz-option::before {
+    content: '';
+    width: 16px; height: 16px;
+    border-radius: var(--ma-radius-full);
+    border: 1.5px solid var(--ma-border-default);
+    flex-shrink: 0;
+    transition: all var(--ma-duration-hover);
+  }
+  .quiz-option:hover {
+    background: var(--ma-bg-subtle);
+    border-color: var(--ma-brand-blue);
+  }
+  .quiz-option:hover::before { border-color: var(--ma-brand-blue); }
+  .quiz-option:active {
+    background: #FFF4E8;
+    border-color: var(--ma-brand-orange);
+  }
+  .quiz-option:active::before {
+    border-color: var(--ma-brand-orange);
+    box-shadow: inset 0 0 0 4px var(--ma-brand-orange);
+  }
+
+  /* Result */
+  .result-card {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  .result-emoji {
+    display: block;
+    font-size: 44px;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    height: 26px;
+    padding: 0 12px;
+    border-radius: var(--ma-radius-sm);
+    background: var(--ma-brand-blue);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .result-badge.dc { background: var(--ma-brand-orange); }
+  .result-badge.both {
+    background: #fff;
+    color: var(--ma-brand-blue);
+    border: 1.5px solid var(--ma-brand-blue);
+  }
+  .result-label {
+    font-size: 11px;
+    color: var(--ma-brand-blue);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+  }
+  .result-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .result-desc {
+    font-size: 14px;
+    color: var(--ma-text-default);
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  .result-reasons {
+    background: var(--ma-bg-subtle);
+    border-radius: var(--ma-radius-md);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .result-reason {
+    font-size: 13px;
+    color: var(--ma-text-default);
+    line-height: 1.5;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .result-reason::before {
+    content: '✓';
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--ma-brand-orange);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* DB/DC sim */
+  .dbdc-control {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .dbdc-year-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .dbdc-year-label {
+    font-size: 12px;
+    color: var(--ma-text-muted);
+    font-weight: 600;
+  }
+  .dbdc-year-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ma-brand-orange);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* 시나리오 토글 */
+  .dbdc-scenario-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--ma-border-muted);
+  }
+  .dbdc-scenario-label {
+    font-size: 12px;
+    color: var(--ma-text-muted);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .dbdc-scenario-toggle {
+    display: inline-flex;
+    background: var(--ma-bg-muted);
+    border-radius: var(--ma-radius-full);
+    padding: 3px;
+    gap: 2px;
+  }
+  .dbdc-scenario-btn {
+    background: transparent;
+    border: none;
+    padding: 6px 12px;
+    border-radius: var(--ma-radius-full);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ma-text-muted);
+    cursor: pointer;
+    transition: background 240ms var(--ma-ease-out), color 240ms var(--ma-ease-out);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.15;
+  }
+  .dbdc-scenario-btn small {
+    font-size: 9px;
+    font-weight: 500;
+    margin-top: 2px;
+    opacity: 0.85;
+  }
+  .dbdc-scenario-btn.active {
+    background: var(--ma-surface-default);
+    color: var(--ma-text-strong);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .sim-slider {
+    width: 100%;
+    height: 4px;
+    border-radius: var(--ma-radius-full);
+    background: var(--ma-bg-muted);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .sim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px; height: 22px;
+    border-radius: var(--ma-radius-full);
+    background: var(--ma-brand-orange);
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: var(--ma-shadow-sm);
+  }
+  .sim-slider::-moz-range-thumb {
+    width: 22px; height: 22px;
+    border-radius: var(--ma-radius-full);
+    background: var(--ma-brand-orange);
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: var(--ma-shadow-sm);
+  }
+
+  .dbdc-principle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .dbdc-principle-item {
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-radius: var(--ma-radius-lg);
+    padding: 12px;
+    min-width: 0;
+  }
+  .dbdc-principle-item strong {
+    display: block;
+    font-size: 13px;
+    color: var(--ma-text-strong);
+    margin: 6px 0 2px;
+    line-height: 1.35;
+    font-weight: 700;
+  }
+  .dbdc-principle-item span:last-child {
+    display: block;
+    font-size: 11px;
+    color: var(--ma-text-muted);
+    line-height: 1.45;
+  }
+  .dbdc-mini-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: var(--ma-radius-sm);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .dbdc-mini-badge.db { background: var(--ma-brand-blue); }
+  .dbdc-mini-badge.dc { background: var(--ma-brand-orange); }
+
+  .dbdc-comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .dbdc-panel {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 12px;
+    min-width: 0;
+  }
+  .dbdc-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .dbdc-panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+  }
+  .dbdc-panel-key {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ma-text-subtle);
+    text-align: right;
+    line-height: 1.3;
+  }
+  .dbdc-mini-visual {
+    height: 132px;
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-radius: var(--ma-radius-md);
+    margin-bottom: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .dbdc-mini-visual .dbdc-tank-area { padding: 4px 14px; }
+  .dbdc-mini-visual .dbdc-blocks-area { padding: 4px 6px; gap: 1px; }
+
+  /* 30년차 양방향 오버레이 — 평소엔 숨김, .show-overlay 일 때만 등장 */
+  .dbdc-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms var(--ma-ease-out);
+  }
+  .dbdc-overlay.show { opacity: 1; }
+  /* 오버레이 내부 컨테이너는 실제 그래프와 동일한 박스 — 패딩 통일 */
+  .dbdc-overlay-dc .dbdc-blocks-area {
+    padding: 4px 14px;
+  }
+  .dbdc-overlay-db .dbdc-tank-area {
+    padding: 4px 6px;
+  }
+  /* DB 패널 위에 깔리는 DC 스택: 반투명 오렌지 */
+  .dbdc-overlay-dc .dbdc-block {
+    background: rgba(245, 130, 32, 0.45);
+    border: 1px dashed rgba(245, 130, 32, 0.85);
+    border-radius: 1px;
+  }
+  .dbdc-overlay-dc .dbdc-block.oldest {
+    background: rgba(203, 96, 21, 0.45);
+    border-color: rgba(203, 96, 21, 0.9);
+  }
+  /* DC 패널 위에 깔리는 DB 직사각형: 반투명 네이비 */
+  .dbdc-overlay-tank {
+    background: rgba(31, 56, 100, 0.35) !important;
+    border: 2px dashed rgba(31, 56, 100, 0.9);
+    box-sizing: border-box;
+  }
+  .dbdc-overlay-caption {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.92);
+  }
+  .dbdc-overlay-dc .dbdc-overlay-caption { color: var(--ma-brand-orange); }
+  .dbdc-overlay-db .dbdc-overlay-caption { color: var(--ma-brand-blue); }
+  .dbdc-panel-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ma-brand-blue);
+    line-height: 1.2;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+  .dbdc-panel-value.orange { color: var(--ma-brand-orange); }
+  .dbdc-panel-formula {
+    min-height: 34px;
+    background: var(--ma-bg-subtle);
+    border-radius: var(--ma-radius-sm);
+    padding: 6px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ma-text-muted);
+    line-height: 1.4;
+  }
+  .dbdc-panel-formula .hl-orange { color: var(--ma-brand-orange); font-weight: 700; }
+  .dbdc-panel-formula .hl-navy { color: var(--ma-brand-blue); font-weight: 700; }
+
+  /* DB tank — solid navy */
+  .dbdc-visual-full {
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-radius: var(--ma-radius-lg);
+    height: 240px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .dbdc-tank-area {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 8px 12px 0;
+  }
+  .dbdc-tank-bg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .dbdc-tank {
+    width: 40%;
+    background: var(--ma-brand-blue);
+    border-radius: var(--ma-radius-sm) var(--ma-radius-sm) 0 0;
+    height: 0;
+    transition: height 600ms var(--ma-ease-out), width 600ms var(--ma-ease-out);
+    position: relative;
+    overflow: hidden;
+  }
+  .dbdc-tank.pulse { animation: dbdcPulse 600ms var(--ma-ease-out); }
+  @keyframes dbdcPulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.15); }
+  }
+  .dbdc-tank-label {
+    position: absolute;
+    top: 10px; left: 0; right: 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    opacity: 0;
+    transition: opacity 240ms;
+  }
+  .dbdc-tank.tall .dbdc-tank-label { opacity: 1; }
+
+  /* DC blocks — stacked from bottom; each slab widens with compounding */
+  .dbdc-blocks-area {
+    height: 100%;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding: 4px 6px;
+    gap: 1px;
+  }
+  .dbdc-block {
+    flex: 1 1 0;
+    min-height: 2px;
+    width: 30%;
+    background: var(--ma-brand-orange);
+    border-radius: 1px;
+    transition: width 600ms var(--ma-ease-out);
+  }
+  .dbdc-block.oldest { background: #CB6015; }
+  .dbdc-block.new { animation: dbdcPop 360ms var(--ma-ease-out); }
+  @keyframes dbdcPop {
+    0% { transform: translateY(-6px); opacity: 0.5; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Info card */
+  .dbdc-info-card {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 16px;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+  .dbdc-info-label {
+    font-size: 11px;
+    color: var(--ma-text-subtle);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    margin-bottom: 6px;
+  }
+  .dbdc-info-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--ma-brand-blue);
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .dbdc-info-value.orange { color: var(--ma-brand-orange); }
+  .dbdc-info-value.pop { animation: popKf 360ms var(--ma-ease-out); }
+  .dbdc-info-formula {
+    font-size: 12px;
+    color: var(--ma-text-muted);
+    font-weight: 600;
+    background: var(--ma-bg-subtle);
+    border-radius: var(--ma-radius-sm);
+    padding: 6px 10px;
+  }
+  .dbdc-info-formula .hl-orange { color: var(--ma-brand-orange); font-weight: 700; }
+  .dbdc-info-formula .hl-navy { color: var(--ma-brand-blue); font-weight: 700; }
+
+  /* Compare bars */
+  .dbdc-compare-bars {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .dbdc-compare-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .dbdc-compare-row:last-child { margin-bottom: 0; }
+  .dbdc-compare-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    width: 24px;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+  .dbdc-compare-bar-wrap {
+    flex: 1;
+    height: 10px;
+    background: var(--ma-bg-muted);
+    border-radius: var(--ma-radius-full);
+    overflow: hidden;
+  }
+  .dbdc-compare-bar {
+    height: 100%;
+    border-radius: var(--ma-radius-full);
+    transition: width 720ms var(--ma-ease-out);
+    width: 0%;
+  }
+  .dbdc-compare-bar.navy { background: var(--ma-brand-blue); }
+  .dbdc-compare-bar.orange { background: var(--ma-brand-orange); }
+
+  .dbdc-compare-amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ma-brand-blue);
+    min-width: 88px;
+    text-align: right;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.005em;
+  }
+  .dbdc-compare-amount.orange { color: var(--ma-brand-orange); }
+
+  .dbdc-diff-card {
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-left: 3px solid var(--ma-brand-orange);
+    border-radius: var(--ma-radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .dbdc-diff-label {
+    font-size: 11px;
+    color: var(--ma-brand-blue);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+  }
+  .dbdc-diff-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--ma-brand-orange);
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .dbdc-diff-msg {
+    font-size: 12px;
+    color: var(--ma-text-muted);
+    line-height: 1.55;
+  }
+
+  /* Simulator */
+  .sim-section {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .sim-label {
+    font-size: 12px;
+    color: var(--ma-text-muted);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .sim-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .sim-choice-btn {
+    background: #fff;
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-md);
+    padding: 10px 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ma-text-default);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.3;
+    transition: background var(--ma-duration-hover), border-color var(--ma-duration-hover);
+  }
+  .sim-choice-btn small {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--ma-text-subtle);
+    margin-top: 4px;
+  }
+  .sim-choice-btn:hover { border-color: var(--ma-brand-blue); }
+  .sim-choice-btn.active {
+    background: #FFF4E8;
+    border-color: var(--ma-brand-orange);
+    color: var(--ma-brand-orange);
+  }
+  .sim-choice-btn.active small { color: var(--ma-brand-orange); }
+
+  .sim-result {
+    background: var(--ma-brand-blue);
+    color: #fff;
+    border-radius: var(--ma-radius-lg);
+    padding: 20px;
+    text-align: left;
+    margin: 12px 0 16px;
+  }
+  .sim-result-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .sim-result-value {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 8px;
+    color: var(--ma-brand-orange);
+    transition: all 240ms var(--ma-ease-out);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
+  }
+  .sim-result-compare {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .sim-result-action {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: var(--ma-radius-sm);
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .sim-result-note {
+    margin-top: 10px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.01em;
+  }
+  .sim-sublabel {
+    margin-left: 6px;
+    font-size: 10px;
+    color: var(--ma-text-subtle);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .sim-choice-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  /* 비활성 상태 — DB 선택 시 DC 운용 섹션 흐림 */
+  .sim-section.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 240ms var(--ma-ease-out);
+  }
+
+  /* OX */
+  .ox-card {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 20px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+  }
+  .ox-question {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    line-height: 1.6;
+    text-align: left;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    letter-spacing: -0.005em;
+  }
+  .ox-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  .ox-btn {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-md);
+    background: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--ma-duration-hover);
+    font-family: inherit;
+    color: var(--ma-text-default);
+  }
+  .ox-btn:hover { border-color: var(--ma-brand-blue); }
+  .ox-btn:active { background: var(--ma-bg-subtle); }
+  .ox-btn.correct {
+    background: #E1F0EA;
+    border-color: var(--ma-success);
+    color: var(--ma-success);
+    box-shadow: inset 0 0 0 1px var(--ma-success);
+  }
+  .ox-btn.wrong {
+    background: #FBE5E1;
+    border-color: var(--ma-danger);
+    color: var(--ma-danger);
+    box-shadow: inset 0 0 0 1px var(--ma-danger);
+  }
+
+  .ox-answer {
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-left: 3px solid var(--ma-brand-blue);
+    border-radius: var(--ma-radius-md);
+    padding: 12px 14px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--ma-text-default);
+    line-height: 1.6;
+    display: none;
+  }
+  .ox-answer.show { display: block; animation: fadeIn 240ms var(--ma-ease-out); }
+  .ox-answer.correct {
+    background: #E8F4F0;
+    border-color: #B8DBCC;
+    border-left-color: var(--ma-success);
+  }
+  .ox-answer.wrong {
+    background: #FBEAE8;
+    border-color: #F2C4BE;
+    border-left-color: var(--ma-danger);
+  }
+  .ox-answer-label {
+    font-weight: 700;
+    color: var(--ma-brand-blue);
+    margin-bottom: 4px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ox-answer-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: var(--ma-radius-full);
+    background: var(--ma-brand-blue);
+  }
+  .ox-answer.correct .ox-answer-label { color: var(--ma-success); }
+  .ox-answer.correct .ox-answer-label::before { background: var(--ma-success); }
+  .ox-answer.wrong .ox-answer-label { color: var(--ma-danger); }
+  .ox-answer.wrong .ox-answer-label::before { background: var(--ma-danger); }
+
+  /* Final */
+  .final-card {
+    background: var(--ma-surface-default);
+    border: 1px solid var(--ma-border-default);
+    border-radius: var(--ma-radius-lg);
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .final-header {
+    text-align: left;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ma-border-muted);
+  }
+  .final-emoji {
+    font-size: 40px;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .final-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--ma-radius-sm);
+    background: var(--ma-brand-blue);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    margin-bottom: 10px;
+  }
+  .final-type-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: var(--ma-radius-full);
+    background: var(--ma-brand-orange);
+  }
+  .final-type {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+  .final-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-bottom: 14px;
+    border: 1px solid var(--ma-border-muted);
+    border-radius: var(--ma-radius-md);
+    overflow: hidden;
+  }
+  .final-stat {
+    background: var(--ma-bg-subtle);
+    padding: 12px 14px;
+    text-align: left;
+  }
+  .final-stat + .final-stat { border-left: 1px solid var(--ma-border-muted); }
+  .final-stat-label {
+    font-size: 11px;
+    color: var(--ma-text-muted);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .final-stat-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .final-money {
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-radius: var(--ma-radius-md);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .final-money-label {
+    font-size: 11px;
+    color: var(--ma-text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .final-money-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--ma-brand-orange);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .final-gap-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--ma-radius-md);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .final-gap-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .final-gap-label strong { color: #fff; }
+  .final-gap-message {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 700;
+  }
+  .final-gap-message strong { color: var(--ma-brand-orange); }
+
+  .final-actions {
+    border-top: 1px solid var(--ma-border-muted);
+    padding-top: 14px;
+  }
+  .final-actions-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ma-brand-blue);
+    letter-spacing: 0.16em;
+    margin-bottom: 10px;
+  }
+  .final-action {
+    font-size: 13px;
+    color: var(--ma-text-default);
+    line-height: 1.55;
+    padding: 6px 0 6px 22px;
+    position: relative;
+  }
+  .final-action::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 12px;
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--ma-border-default);
+    border-radius: 2px;
+  }
+  .final-action-primary {
+    background: #FFF4E8;
+    border: 1px solid var(--ma-brand-orange);
+    border-radius: var(--ma-radius-md);
+    padding: 10px 12px 10px 32px;
+    margin-bottom: 6px;
+    font-weight: 700;
+    color: var(--ma-text-strong);
+    font-size: 13px;
+    line-height: 1.5;
+    position: relative;
+  }
+  .final-action-primary::before {
+    content: '';
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    background-color: var(--ma-brand-orange);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none' stroke='%23fff' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'><polyline points='3 7.5 6 10.25 11 4.25'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border-radius: 2px;
+  }
+
+  .quote-box {
+    background: var(--ma-brand-blue);
+    color: #fff;
+    border-radius: var(--ma-radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .quote-text {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.65;
+  }
+  .quote-text strong { color: var(--ma-brand-orange); }
+
+  /* Button group */
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 20px;
+  }
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+  .btn-row > button { flex: 1; padding: 12px; font-size: 14px; }
+  .hint {
+    font-size: 12px;
+    color: var(--ma-text-subtle);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* Caveat */
+  .caveat-note {
+    background: var(--ma-bg-subtle);
+    border: 1px solid var(--ma-border-muted);
+    border-left: 3px solid var(--ma-warning);
+    border-radius: var(--ma-radius-md);
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--ma-text-muted);
+    line-height: 1.55;
+    margin: 12px 0;
+  }
+
+  .source-note {
+    font-size: 11px;
+    color: var(--ma-text-subtle);
+    text-align: center;
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+
+  /* Pop */
+  .pop { animation: popKf 320ms var(--ma-ease-out); }
+  @keyframes popKf {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  /* Desktop framing */
+  @media (min-width: 481px) {
+    body {
+      background: var(--ma-bg-muted);
+      padding: 24px 0;
+    }
+    #app {
+      border: 1px solid var(--ma-border-default);
+      border-radius: var(--ma-radius-lg);
+      box-shadow: var(--ma-shadow-md);
+      overflow: hidden;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- 브랜드 바 -->
+  <header class="brand-bar">
+    <img src="data:image/png;base64,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" alt="미래에셋증권">
+    <div class="brand-step">STEP <strong id="stepNum">1</strong> / 8</div>
+  </header>
+
+  <!-- 진도 게이지 -->
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- ====== 화면 1: 후크 ====== -->
+  <section class="screen screen-hook active" id="screen-1">
+    <div class="hook-eyebrow">RETIREMENT REALITY</div>
+    <h1 class="hook-headline">은퇴 후 10년,<br>가장 큰 소득 공백이 시작됩니다</h1>
+    <div class="hook-number-row">
+      <div class="hook-number" id="hookNum">3억</div>
+      <div class="hook-unit">부족합니다</div>
+    </div>
+    <div class="hook-desc">55세 퇴직부터 65세 국민연금까지</div>
+    <div class="hook-period"><strong>10년의 소득 공백</strong>을 메우는 데 필요한 비용</div>
+
+    <div class="hook-card">
+      <div class="hook-card-text">
+        직장인 <strong>78%</strong>가 은퇴 후 재무 불안을 느낍니다.<br>
+        그런데 2023년 말 기준 퇴직연금 적립금의 <strong>87.2%</strong>가 원리금보장형에 머물러 있습니다.
+      </div>
+      <div class="hook-source">출처: 고용노동부·금융감독원, 2023년말 퇴직연금 운용현황</div>
+    </div>
+
+    <button class="btn-primary" onclick="goTo(2)">3분 만에 진단해보기 →</button>
+    <div class="hint">질문에 답하며 결과를 확인해 보세요</div>
+  </section>
+
+  <!-- ====== 화면 2: 두 사람 시뮬레이션 ====== -->
+  <section class="screen" id="screen-2">
+    <div class="screen-header">
+      <div class="screen-label">SIMULATION</div>
+      <h1 class="screen-title">같은 회사, 다른 30년</h1>
+      <p class="screen-subtitle">같은 조건에서 관리 여부만 바꾸면 결과가 어떻게 달라질까요?</p>
+    </div>
+
+    <div class="race-container">
+      <div class="race-year"><span id="raceYearText">입사 직후 (26세)</span></div>
+
+      <div class="race-people">
+        <div class="race-person passive">
+          <span class="race-emoji" aria-hidden="true">😪</span>
+          <div class="race-name">김 대리</div>
+          <div class="race-mode">방치 (원리금보장)</div>
+          <div class="race-amount" id="amt1">0</div>
+        </div>
+        <div class="race-person active">
+          <span class="race-emoji" aria-hidden="true">💪</span>
+          <div class="race-name">박 대리</div>
+          <div class="race-mode">관리 (글로벌 분산)</div>
+          <div class="race-amount" id="amt2">0</div>
+        </div>
+      </div>
+
+      <div class="race-bar-row">
+        <div class="race-bar-name">김 (방치)</div>
+        <div class="race-bar-wrap"><div class="race-bar" id="bar1"></div></div>
+      </div>
+      <div class="race-bar-row">
+        <div class="race-bar-name">박 (관리)</div>
+        <div class="race-bar-wrap"><div class="race-bar" id="bar2"></div></div>
+      </div>
+    </div>
+
+    <div class="race-conclusion" id="raceConclusion">
+      <div class="race-conclusion-num">3배 차이</div>
+      <div class="race-conclusion-text">같은 시간, 같은 회사, 같은 연봉<br>차이는 단 하나, <strong>관리 여부</strong></div>
+    </div>
+
+    <div class="btn-group">
+      <div class="btn-row">
+        <button class="btn-orange" id="raceBtn" onclick="startRace()">빨리감기</button>
+        <button class="btn-secondary" id="raceSkip" onclick="skipRace()">결과 바로 보기</button>
+      </div>
+      <button class="btn-secondary" onclick="renderDbdcStage(1); goTo(5);" id="raceNext" style="display:none">다음: DB와 DC 알아보기 →</button>
+    </div>
+  </section>
+
+  <!-- ====== 화면 3: DB vs DC 진단 ====== -->
+  <section class="screen" id="screen-3">
+    <div class="quiz-progress">DB vs DC 진단 · <span id="quizStep">1</span>/3</div>
+    <div class="quiz-dots">
+      <div class="quiz-dot active" id="dot1"></div>
+      <div class="quiz-dot" id="dot2"></div>
+      <div class="quiz-dot" id="dot3"></div>
+    </div>
+
+    <div class="quiz-question" id="quizQ">한 회사에 10년 이상 다닐 가능성?</div>
+
+    <div class="quiz-options" id="quizOpts">
+      <!-- 동적 생성 -->
+    </div>
+  </section>
+
+  <!-- ====== 화면 4: 진단 결과 ====== -->
+  <section class="screen" id="screen-4">
+    <div class="screen-header" style="text-align:center">
+      <div class="screen-label">YOUR MATCH</div>
+      <h1 class="screen-title" id="matchTitle">DC형이 더 잘 맞아요</h1>
+    </div>
+
+    <div class="result-card">
+      <span class="result-emoji" id="matchEmoji" aria-hidden="true">🎯</span>
+      <span class="result-badge" id="matchBadge">DC</span>
+      <div class="result-label" id="matchLabel">CONFIDENCE</div>
+      <div class="result-title" id="matchScore">강한 매칭</div>
+      <div class="result-desc" id="matchDesc"></div>
+      <div class="result-reasons" id="matchReasons"></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="goTo(6)">다음: 내 조건으로 보기 →</button>
+    </div>
+  </section>
+
+  <!-- ====== 화면 5: DB vs DC 시뮬레이션 ====== -->
+  <section class="screen" id="screen-5">
+    <div class="screen-header">
+      <div class="screen-label" id="dbdcLabel">DB/DC PRINCIPLE</div>
+      <h1 class="screen-title" id="dbdcTitle">DB와 DC, 한 화면에서 보기</h1>
+      <p class="screen-subtitle" id="dbdcSubtitle">DB는 임금상승률, DC는 운용수익률이 핵심입니다</p>
+    </div>
+
+    <!-- 연차 슬라이더 + 시나리오 토글 -->
+    <div class="dbdc-control">
+      <div class="dbdc-scenario-row">
+        <span class="dbdc-scenario-label">시나리오</span>
+        <div class="dbdc-scenario-toggle" id="dbdcScenarioToggle">
+          <button type="button" class="dbdc-scenario-btn active" data-scenario="dc-strong">
+            운용 강함
+            <small>임금 3% · 운용 4.5%</small>
+          </button>
+          <button type="button" class="dbdc-scenario-btn" data-scenario="db-strong">
+            임금 강함
+            <small>임금 5% · 운용 2.5%</small>
+          </button>
+        </div>
+      </div>
+      <div class="dbdc-year-row">
+        <span class="dbdc-year-label">입사 후 경과</span>
+        <span class="dbdc-year-num" id="dbdcYearNum">0년차</span>
+      </div>
+      <input type="range" min="0" max="30" value="0" class="sim-slider" id="dbdcSlider">
+    </div>
+
+    <div class="dbdc-principle">
+      <div class="dbdc-principle-item">
+        <span class="dbdc-mini-badge db">DB</span>
+        <strong>연봉이 오르면 커집니다</strong>
+        <span>퇴직 전 월급 × 근속연수</span>
+      </div>
+      <div class="dbdc-principle-item">
+        <span class="dbdc-mini-badge dc">DC</span>
+        <strong>오래 굴리면 커집니다</strong>
+        <span>매년 적립금 × 운용수익률</span>
+      </div>
+    </div>
+
+    <div class="dbdc-comparison-grid">
+      <div class="dbdc-panel">
+        <div class="dbdc-panel-head">
+          <div class="dbdc-panel-title">DB형</div>
+          <div class="dbdc-panel-key">임금상승률<br>중심</div>
+        </div>
+        <div class="dbdc-mini-visual">
+          <div class="dbdc-tank-area">
+            <div class="dbdc-tank-bg">
+              <div class="dbdc-tank" id="dbdcTank">
+                <div class="dbdc-tank-label">DB</div>
+              </div>
+            </div>
+          </div>
+          <div class="dbdc-overlay dbdc-overlay-dc" id="dbdcOverlayDc" aria-hidden="true">
+            <div class="dbdc-blocks-area" id="dbdcOverlayBlocks"></div>
+            <div class="dbdc-overlay-caption">DC 적립 + 복리</div>
+          </div>
+        </div>
+        <div class="dbdc-panel-value" id="dbdcDbAmount">0원</div>
+        <div class="dbdc-panel-formula" id="dbdcDbFormula">
+          퇴직 전 월급 × 근속연수
+        </div>
+      </div>
+
+      <div class="dbdc-panel">
+        <div class="dbdc-panel-head">
+          <div class="dbdc-panel-title">DC형</div>
+          <div class="dbdc-panel-key">투자수익률<br>중심</div>
+        </div>
+        <div class="dbdc-mini-visual">
+          <div class="dbdc-blocks-area" id="dbdcBlocks"></div>
+          <div class="dbdc-overlay dbdc-overlay-db" id="dbdcOverlayDb" aria-hidden="true">
+            <div class="dbdc-tank-area">
+              <div class="dbdc-tank-bg">
+                <div class="dbdc-tank dbdc-overlay-tank" id="dbdcOverlayTank"></div>
+              </div>
+            </div>
+            <div class="dbdc-overlay-caption">DB 면적</div>
+          </div>
+        </div>
+        <div class="dbdc-panel-value orange" id="dbdcDcAmount">0원</div>
+        <div class="dbdc-panel-formula">
+          매년 적립 + <span class="hl-orange">복리 4.5%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dbdc-compare-bars">
+      <div class="dbdc-compare-row">
+        <div class="dbdc-compare-label">DB</div>
+        <div class="dbdc-compare-bar-wrap">
+          <div class="dbdc-compare-bar navy" id="dbdcCompareBarDb"></div>
+        </div>
+        <div class="dbdc-compare-amount" id="dbdcCompareDb">0원</div>
+      </div>
+      <div class="dbdc-compare-row">
+        <div class="dbdc-compare-label">DC</div>
+        <div class="dbdc-compare-bar-wrap">
+          <div class="dbdc-compare-bar orange" id="dbdcCompareBarDc"></div>
+        </div>
+        <div class="dbdc-compare-amount orange" id="dbdcCompareDc">0원</div>
+      </div>
+    </div>
+
+    <div class="dbdc-diff-card" id="dbdcDiffCard">
+      <div class="dbdc-diff-label">두 시나리오의 차이</div>
+      <div class="dbdc-diff-value" id="dbdcDiffValue">0원</div>
+      <div class="dbdc-diff-msg" id="dbdcDiffMsg">
+        슬라이더를 움직이면 DB와 DC의 차이가 함께 바뀝니다
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <div class="btn-row">
+        <button class="btn-orange" id="dbdcPlayBtn" onclick="playDbdcTimeline()">30년 빨리보기</button>
+        <button class="btn-primary" onclick="goTo(3)">다음: 나는 어느 쪽? 진단하기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 화면 6: 시뮬레이터 ====== -->
+  <section class="screen" id="screen-6">
+    <div class="screen-header">
+      <div class="screen-label">SIMULATOR</div>
+      <h1 class="screen-title">내 조건으로 30년 후 보기</h1>
+      <p class="screen-subtitle">제도·직업·근속·운용 — 네 가지로 내 노후 자산이 결정됩니다</p>
+    </div>
+
+    <div class="sim-section">
+      <div class="sim-label">제도</div>
+      <div class="sim-choice-grid" data-choice-group="system">
+        <button class="sim-choice-btn" data-system="db">DB형<small>회사가 운용</small></button>
+        <button class="sim-choice-btn active" data-system="dc">DC형<small>내가 운용</small></button>
+      </div>
+    </div>
+
+    <div class="sim-section">
+      <div class="sim-label">직업 <span class="sim-sublabel">임금상승률 기준</span></div>
+      <div class="sim-choice-grid sim-choice-grid-4" data-choice-group="job">
+        <button class="sim-choice-btn" data-job="public">공무원·공기업<small>3.5%</small></button>
+        <button class="sim-choice-btn active" data-job="bigcorp">대기업·금융<small>5.5%</small></button>
+        <button class="sim-choice-btn" data-job="sme">중소·일반사무<small>3.0%</small></button>
+        <button class="sim-choice-btn" data-job="freelance">자영업·프리랜서<small>2.0%</small></button>
+      </div>
+    </div>
+
+    <div class="sim-section">
+      <div class="sim-label">근속연수</div>
+      <div class="sim-choice-grid" data-choice-group="years">
+        <button class="sim-choice-btn" data-years="20">20년<small>중간 이직</small></button>
+        <button class="sim-choice-btn active" data-years="30">30년<small>장기 근속</small></button>
+        <button class="sim-choice-btn" data-years="40">40년<small>평생 근속</small></button>
+      </div>
+    </div>
+
+    <div class="sim-section" id="simModeSection">
+      <div class="sim-label">DC 운용 방식 <span class="sim-sublabel" id="simModeNote">DC형 선택 시 적용</span></div>
+      <div class="sim-choice-grid" data-choice-group="mode">
+        <button class="sim-choice-btn" data-mode="passive">방치<small>2.5%</small></button>
+        <button class="sim-choice-btn active" data-mode="default">중간<small>4.5%</small></button>
+        <button class="sim-choice-btn" data-mode="active">적극<small>6.0%</small></button>
+      </div>
+    </div>
+
+    <div class="sim-result">
+      <div class="sim-result-label" id="simResultLabel">DC · 대기업 · 30년 · 중간 운용</div>
+      <div class="sim-result-value" id="simResult">2억 1,968만원</div>
+      <div class="sim-result-compare" id="simCompare">DB였다면 +5,000만원</div>
+      <div class="sim-result-action" id="simAction">오늘 할 일: 디폴트옵션 위험등급을 한 번만 등록해두기</div>
+      <div class="sim-result-note">* 초봉 3,000만원 기준</div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="goTo(7)">다음: 얼마나 알고 있나요? →</button>
+    </div>
+  </section>
+
+  <!-- ====== 화면 7: OX 퀴즈 ====== -->
+  <section class="screen" id="screen-7">
+    <div class="quiz-progress">상식 퀴즈 · <span id="oxStep">1</span>/5</div>
+    <div class="quiz-dots" id="oxDots">
+      <div class="quiz-dot active"></div>
+      <div class="quiz-dot"></div>
+      <div class="quiz-dot"></div>
+      <div class="quiz-dot"></div>
+      <div class="quiz-dot"></div>
+    </div>
+
+    <div class="ox-card">
+      <div class="ox-question" id="oxQ">DC에서 DB로 전환은 자유롭게 할 수 있다</div>
+      <div class="ox-buttons">
+        <button class="ox-btn o" onclick="answerOX(true)">O</button>
+        <button class="ox-btn x" onclick="answerOX(false)">X</button>
+      </div>
+      <div class="ox-answer" id="oxAns">
+        <div class="ox-answer-label" id="oxAnsLabel">정답: X</div>
+        <div id="oxAnsText"></div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" id="oxNextBtn" onclick="nextOX()" style="display:none">다음 문제 →</button>
+    </div>
+  </section>
+
+  <!-- ====== 화면 8: 통합 결과 ====== -->
+  <section class="screen" id="screen-8">
+    <div class="screen-header" style="text-align:center">
+      <div class="screen-label">진단 완료</div>
+      <h1 class="screen-title">당신의 퇴직연금 프로필</h1>
+    </div>
+
+    <div class="final-card">
+      <div class="final-header">
+        <div class="final-emoji" id="finalEmoji" aria-hidden="true">🎯</div>
+        <div class="final-type-badge" id="finalGrade">YOUR TYPE</div>
+        <div class="final-type" id="finalType">균형 운용러</div>
+      </div>
+
+      <div class="final-stats">
+        <div class="final-stat">
+          <div class="final-stat-label">추천 제도</div>
+          <div class="final-stat-value" id="finalSystem">DC형</div>
+        </div>
+        <div class="final-stat">
+          <div class="final-stat-label">퀴즈 점수</div>
+          <div class="final-stat-value" id="finalQuiz">3/5</div>
+        </div>
+      </div>
+
+      <div class="final-money">
+        <div class="final-money-label">30년 후 예상 적립금</div>
+        <div class="final-money-value" id="finalMoney">1억 3,800만원</div>
+      </div>
+
+      <div class="final-gap-card">
+        <div class="final-gap-label">처음에 본 <strong>10년 소득공백 3억</strong></div>
+        <div class="final-gap-message" id="finalGapMessage">— 당신의 시나리오로 메꿉니다</div>
+      </div>
+
+      <div class="final-actions">
+        <div class="final-actions-title">오늘 할 일 1개</div>
+        <div class="final-action final-action-primary" id="finalPrimaryAction">내 퇴직연금이 DB인지 DC인지 확인하기</div>
+        <div class="final-action">디폴트옵션 위험등급 등록</div>
+        <div class="final-action">IRP 계좌 개설 검토</div>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      <div class="quote-text">
+        <strong>입사 첫날</strong>의 작은 선택이<br>
+        30년 후의 <strong>큰 자산</strong>을 만듭니다
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-orange" onclick="shareResult()">결과 공유하기</button>
+      <button class="btn-secondary" onclick="restart()">다시 진단하기</button>
+    </div>
+  </section>
+</div>
+
+<script>
+// ============= 상태 관리 =============
+const state = {
+  currentScreen: 1,
+  totalScreens: 8,
+  dbDcScore: 0,        // 양수=DB, 음수=DC
+  quizAnswers: [],     // DB/DC 진단 답변
+  simSystem: 'dc',     // 'db' | 'dc'
+  simJob: 'bigcorp',   // 'public' | 'bigcorp' | 'sme' | 'freelance'
+  simYears: 30,        // 20 | 30 | 40
+  simMode: 'default',  // 'passive' | 'default' | 'active' (DC 전용)
+  oxIndex: 0,
+  oxCorrect: 0,
+  oxAnswered: false
+};
+
+// 직업별 임금상승률 (연 단위)
+// 근거: 경총 2025 임금인상 분석(대기업 3.9%, 중소 2.5%), 공무원 호봉표(연 ~2.4% + 베이스업)
+const SIM_JOB_GROWTH = {
+  public:    0.035,    // 공무원·공기업
+  bigcorp:   0.055,    // 대기업·금융
+  sme:       0.030,    // 중소기업·일반사무
+  freelance: 0.020,    // 자영업·프리랜서
+};
+
+// DC 운용 수익률
+const SIM_MODE_RATE = {
+  passive: 0.025,
+  default: 0.045,
+  active:  0.060,
+};
+
+const SIM_BASE_SALARY = 3000;  // 만원, 모든 시나리오 공통 초봉
+
+// ============= 진도 업데이트 =============
+function updateProgress() {
+  const pct = (state.currentScreen / state.totalScreens) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  const stepEl = document.getElementById('stepNum');
+  if (stepEl) stepEl.textContent = state.currentScreen;
+}
+
+// ============= 화면 전환 =============
+function goTo(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+  state.currentScreen = n;
+  updateProgress();
+  window.scrollTo(0, 0);
+
+  // 화면 6 진입 시 진단 결과를 반영해 시뮬레이터 재렌더
+  if (n === 6) updateSimResult();
+}
+
+// ============= 화면 2: 두 사람 시뮬레이션 =============
+const raceConfig = {
+  finalPassive: 4200,
+  finalActive: 13800,
+  duration: 5200,
+  startAge: 26,
+};
+let raceAnimationId = null;
+
+function renderRaceFrame(progress) {
+  const passiveNow = Math.round(raceConfig.finalPassive * progress);
+  const activeNow = Math.round(raceConfig.finalActive * Math.pow(progress, 1.5));
+
+  document.getElementById('amt1').textContent = formatMoney(passiveNow);
+  document.getElementById('amt2').textContent = formatMoney(activeNow);
+
+  // 같은 금액 축에서 비교해야 최종 차이가 막대 길이에도 남는다.
+  document.getElementById('bar1').style.width = (passiveNow / raceConfig.finalActive * 100) + '%';
+  document.getElementById('bar2').style.width = (activeNow / raceConfig.finalActive * 100) + '%';
+
+  const currentAge = Math.round(raceConfig.startAge + progress * 30);
+  document.getElementById('raceYearText').textContent =
+    progress < 1 ? `${currentAge}세 (${Math.round(progress * 30)}년 경과)` : '56세 (30년 경과)';
+}
+
+function finishRace() {
+  if (raceAnimationId) {
+    cancelAnimationFrame(raceAnimationId);
+    raceAnimationId = null;
+  }
+  renderRaceFrame(1);
+  document.getElementById('raceConclusion').classList.add('show');
+  document.getElementById('raceNext').style.display = 'block';
+  document.getElementById('raceBtn').style.display = 'none';
+  document.getElementById('raceSkip').style.display = 'none';
+}
+
+function startRace() {
+  const btn = document.getElementById('raceBtn');
+  btn.disabled = true;
+  btn.textContent = '진행 중...';
+  const startTime = Date.now();
+
+  function animate() {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / raceConfig.duration, 1);
+    renderRaceFrame(progress);
+
+    if (progress < 1) {
+      raceAnimationId = requestAnimationFrame(animate);
+    } else {
+      finishRace();
+    }
+  }
+  animate();
+}
+
+function skipRace() {
+  finishRace();
+}
+
+function formatMoney(manwon) {
+  if (!manwon || manwon === 0) return '0원';
+  if (manwon < 10000) return manwon.toLocaleString() + '만원';
+  const eok = Math.floor(manwon / 10000);
+  const rest = manwon % 10000;
+  if (rest === 0) return eok + '억원';
+  return eok + '억 ' + rest.toLocaleString() + '만원';
+}
+
+// ============= 화면 3: DB vs DC 진단 =============
+const quizQuestions = [
+  {
+    q: '한 회사에 10년 이상 다닐 가능성?',
+    opts: [
+      { text: '높음 (정년까지 다닐 듯)', score: 2 },
+      { text: '보통 (5~10년 정도)', score: 0 },
+      { text: '낮음 (2~3년 안에 이직)', score: -2 }
+    ]
+  },
+  {
+    q: '내 연봉이 꾸준히 오를 것 같다',
+    opts: [
+      { text: '그렇다 (호봉제 / 안정적 인상)', score: 2 },
+      { text: '보통이다', score: 0 },
+      { text: '아니다 (성과 변동 큼)', score: -2 }
+    ]
+  },
+  {
+    q: '직접 운용에 시간을 쓸 의향이?',
+    opts: [
+      { text: '없다 (회사가 알아서)', score: 2 },
+      { text: '있다 (한 번 설정 후 자동)', score: -1 },
+      { text: '많다 (적극 관리하고 싶음)', score: -2 }
+    ]
+  }
+];
+
+let currentQ = 0;
+
+function renderQuiz() {
+  const q = quizQuestions[currentQ];
+  document.getElementById('quizQ').textContent = q.q;
+  document.getElementById('quizStep').textContent = currentQ + 1;
+
+  const dots = ['dot1', 'dot2', 'dot3'];
+  dots.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active', 'done');
+    if (i < currentQ) el.classList.add('done');
+    else if (i === currentQ) el.classList.add('active');
+  });
+
+  const optsEl = document.getElementById('quizOpts');
+  optsEl.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = opt.text;
+    btn.onclick = () => selectQuizOpt(opt.score);
+    optsEl.appendChild(btn);
+  });
+}
+
+function selectQuizOpt(score) {
+  state.dbDcScore += score;
+  state.quizAnswers.push(score);
+  currentQ++;
+  if (currentQ < quizQuestions.length) {
+    renderQuiz();
+  } else {
+    showMatchResult();
+    goTo(4);
+  }
+}
+
+// ============= 화면 4: 진단 결과 =============
+function showMatchResult() {
+  const s = state.dbDcScore;
+  let result;
+
+  if (s >= 3) {
+    result = {
+      title: 'DB형 성향에 가까워요',
+      badge: 'DB',
+      badgeClass: 'result-badge',
+      emoji: '🛡️',
+      label: 'STABLE GROWTH',
+      score: '강한 매칭',
+      desc: '장기 근속과 안정적인 임금 상승 환경이라면 DB의 가치가 최대로 발휘됩니다. (실제 제도는 회사가 결정합니다)',
+      reasons: [
+        '근속연수가 곧 자산, 오래 다닐수록 유리',
+        '회사가 운용 위험을 대신 부담',
+        '미래의 큰 그림이 지금 확정됨'
+      ],
+      system: 'DB형',
+      simSystem: 'db'
+    };
+  } else if (s <= -3) {
+    result = {
+      title: 'DC형 성향에 가까워요',
+      badge: 'DC',
+      badgeClass: 'result-badge dc',
+      emoji: '🚀',
+      label: 'ACTIVE MANAGEMENT',
+      score: '강한 매칭',
+      desc: '이직 가능성이 있거나 직접 운용에 적극적이라면 DC가 자산 연속성과 성장을 다 잡습니다. (실제 제도는 회사가 결정합니다)',
+      reasons: [
+        '이직해도 자산이 끊기지 않음',
+        '운용 결과가 그대로 내 자산',
+        'IRP로 자산 누적이 가능'
+      ],
+      system: 'DC형',
+      simSystem: 'dc'
+    };
+  } else {
+    result = {
+      title: '두 제도 모두 무난한 성향이에요',
+      badge: 'DB · DC',
+      badgeClass: 'result-badge both',
+      emoji: '⚖️',
+      label: 'FLEXIBLE',
+      score: '균형형',
+      desc: '어느 쪽이든 큰 차이가 없는 상황입니다. 회사가 운영하는 제도에 맞춰 운용 방식에 집중하면 충분합니다.',
+      reasons: [
+        '제도 자체보다 운용 방식이 더 중요',
+        '디폴트옵션 설정이 핵심',
+        '나중에 상황 바뀌면 재검토'
+      ],
+      system: 'DB/DC 모두 OK',
+      simSystem: s >= 0 ? 'db' : 'dc'
+    };
+  }
+
+  // 진단 응답을 시뮬레이터 기본값으로 매핑
+  // quizAnswers[0]=근속(Q1), [1]=연봉(Q2), [2]=운용(Q3)
+  const a = state.quizAnswers;
+  state.simSystem = result.simSystem;
+  if (a[0] === 2) state.simYears = 40;
+  else if (a[0] === 0) state.simYears = 30;
+  else state.simYears = 20;
+  if (a[1] === 2) state.simJob = 'public';
+  else if (a[1] === 0) state.simJob = 'sme';
+  else state.simJob = 'bigcorp';
+  if (a[2] === -2) state.simMode = 'active';
+  else state.simMode = 'default';
+
+  document.getElementById('matchTitle').textContent = result.title;
+  document.getElementById('matchEmoji').textContent = result.emoji;
+  const badgeEl = document.getElementById('matchBadge');
+  badgeEl.textContent = result.badge;
+  badgeEl.className = result.badgeClass;
+  document.getElementById('matchLabel').textContent = result.label;
+  document.getElementById('matchScore').textContent = result.score;
+  document.getElementById('matchDesc').textContent = result.desc;
+
+  const reasonsEl = document.getElementById('matchReasons');
+  reasonsEl.innerHTML = '';
+  result.reasons.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'result-reason';
+    div.textContent = r;
+    reasonsEl.appendChild(div);
+  });
+
+  // 최종 화면에서 사용
+  state.finalSystem = result.system;
+}
+
+// ============= 화면 5: DB vs DC 시뮬레이션 =============
+const dbdcState = {
+  year: 0,
+  playing: false,
+  scenario: 'dc-strong',  // 'dc-strong' | 'db-strong'
+};
+let dbdcAnimationId = null;
+
+// 시나리오별 임금상승률/운용수익률
+const DBDC_SCENARIOS = {
+  'dc-strong': { salaryGrowth: 1.03, dcReturn: 1.045 },
+  'db-strong': { salaryGrowth: 1.05, dcReturn: 1.025 },
+};
+
+// 환경 변수 (공통)
+const DBDC = {
+  startSalary: 3000,        // 만원 (초봉 연 3000만)
+  years: 30,
+};
+
+function getDbdcRates() {
+  return DBDC_SCENARIOS[dbdcState.scenario] || DBDC_SCENARIOS['dc-strong'];
+}
+
+function calcDbdcDB(year) {
+  if (year === 0) return { amount: 0, salary: DBDC.startSalary / 12 };
+  const { salaryGrowth } = getDbdcRates();
+  // 현재 시점 월급
+  const currentMonthly = (DBDC.startSalary / 12) * Math.pow(salaryGrowth, year - 1);
+  // DB: 현재 월급 × 근속연수
+  const amount = currentMonthly * year;
+  return { amount, salary: currentMonthly };
+}
+
+function calcDbdcDC(year) {
+  // 각 연도 적립금 (월급의 1/12 한 달치) × 복리
+  const { salaryGrowth, dcReturn } = getDbdcRates();
+  const blocks = [];
+  let total = 0;
+  for (let i = 1; i <= year; i++) {
+    const yearSalary = DBDC.startSalary * Math.pow(salaryGrowth, i - 1);
+    const contribution = yearSalary / 12;  // 한 달치
+    const yearsInvested = year - i;
+    const value = contribution * Math.pow(dcReturn, yearsInvested);
+    blocks.push({ year: i, value, contribution });
+    total += value;
+  }
+  return { blocks, total };
+}
+
+function formatMoneyDbdc(manwon) {
+  return formatMoney(Math.round(manwon));
+}
+
+function stopDbdcTimeline() {
+  if (dbdcAnimationId) {
+    cancelAnimationFrame(dbdcAnimationId);
+    dbdcAnimationId = null;
+  }
+  dbdcState.playing = false;
+}
+
+function renderDbdcStage() {
+  stopDbdcTimeline();
+  const slider = document.getElementById('dbdcSlider');
+  const playBtn = document.getElementById('dbdcPlayBtn');
+  if (slider) slider.value = 0;
+  if (playBtn) playBtn.textContent = '30년 빨리보기';
+  updateDbdcVisuals(0);
+}
+
+function playDbdcTimeline() {
+  stopDbdcTimeline();
+
+  const slider = document.getElementById('dbdcSlider');
+  const playBtn = document.getElementById('dbdcPlayBtn');
+  let startYear = parseInt(slider.value, 10) || 0;
+  if (startYear >= DBDC.years) startYear = 0;
+
+  dbdcState.playing = true;
+  slider.value = startYear;
+  updateDbdcVisuals(startYear);
+  if (playBtn) playBtn.textContent = '진행 중';
+
+  const startedAt = performance.now();
+  const duration = Math.max(1600, 4200 * ((DBDC.years - startYear) / DBDC.years));
+
+  function tick(now) {
+    const raw = Math.min((now - startedAt) / duration, 1);
+    const eased = 1 - Math.pow(1 - raw, 3);
+    const year = Math.min(DBDC.years, Math.round(startYear + (DBDC.years - startYear) * eased));
+
+    if (parseInt(slider.value, 10) !== year) {
+      slider.value = year;
+      updateDbdcVisuals(year);
+    }
+
+    if (raw < 1) {
+      dbdcAnimationId = requestAnimationFrame(tick);
+    } else {
+      dbdcAnimationId = null;
+      dbdcState.playing = false;
+      if (playBtn) playBtn.textContent = '다시 보기';
+    }
+  }
+
+  dbdcAnimationId = requestAnimationFrame(tick);
+}
+
+function updateDbdcVisuals(year) {
+  const prevYear = dbdcState.year;
+  dbdcState.year = year;
+  document.getElementById('dbdcYearNum').textContent = year + '년차';
+
+  const db = calcDbdcDB(year);
+  const dc = calcDbdcDC(year);
+
+  const tank = document.getElementById('dbdcTank');
+  const dbAmountEl = document.getElementById('dbdcDbAmount');
+  const dbFormulaEl = document.getElementById('dbdcDbFormula');
+
+  // 30년차에 DC 스택의 실제 가용 높이(132 − blocks-area 위아래 패딩 4*2 = 124px)와
+  // 동일해지도록 맞춤. 두 형태의 세로축이 일치해 가로폭만으로 차이가 드러남.
+  const visualMaxHeight = 124;
+  // 높이 = 근속연수 비례 (30년 = 100%). 면적이 금액(월급×근속)으로 해석되도록 좌표계 통일.
+  // 단 1~5년차의 시각적 가독성을 위해 최소 6px 보장.
+  const tankH = year === 0 ? 0 : Math.max((year / DBDC.years) * visualMaxHeight, 6);
+  tank.style.height = tankH + 'px';
+  // 공통 가로 척도 = max(30년차 DB 월급, 30년차 DC 최상단 슬랩).
+  // 둘 다 같은 분모로 정규화해 시나리오에 무관하게 비교 가능.
+  const finalDcForScale = calcDbdcDC(DBDC.years);
+  const finalDbForScale = calcDbdcDB(DBDC.years);
+  const dcTopSlabValue = finalDcForScale.blocks.length > 0
+    ? Math.max(...finalDcForScale.blocks.map(b => b.value))
+    : 1;
+  const commonHorizScale = Math.max(finalDbForScale.salary, dcTopSlabValue, 1);
+  const tankWFrac = year === 0 ? 0 : db.salary / commonHorizScale;
+  tank.style.width = (tankWFrac * 100) + '%';
+  if (tankH > 60) tank.classList.add('tall');
+  else tank.classList.remove('tall');
+
+  if (year !== prevYear && year > 0) {
+    tank.classList.remove('pulse');
+    void tank.offsetWidth;
+    tank.classList.add('pulse');
+  }
+
+  dbAmountEl.textContent = formatMoneyDbdc(db.amount);
+  if (year === 0) {
+    dbFormulaEl.innerHTML = '퇴직 전 월급 × 근속연수';
+  } else {
+    const salaryFmt = Math.round(db.salary).toLocaleString();
+    dbFormulaEl.innerHTML =
+      `월 <span class="hl-navy">${salaryFmt}만원</span> × <span class="hl-navy">${year}년</span>`;
+  }
+
+  const blocksArea = document.getElementById('dbdcBlocks');
+  const finalDc = calcDbdcDC(30);
+
+  // Reuse existing blocks so width transitions animate smoothly
+  while (blocksArea.children.length > dc.blocks.length) {
+    blocksArea.removeChild(blocksArea.lastChild);
+  }
+  while (blocksArea.children.length < dc.blocks.length) {
+    const newBlock = document.createElement('div');
+    newBlock.className = 'dbdc-block';
+    blocksArea.appendChild(newBlock);
+  }
+  dc.blocks.forEach((b, idx) => {
+    const block = blocksArea.children[idx];
+    block.classList.toggle('oldest', idx === 0 && year >= 10);
+    if (b.year === year && year > prevYear) {
+      block.classList.remove('new');
+      void block.offsetWidth;
+      block.classList.add('new');
+    }
+    // DB와 같은 가로 척도(commonHorizScale)로 정규화 — 시나리오 무관하게 비교 가능
+    const wFrac = Math.max(b.value / commonHorizScale, 0.04);
+    block.style.width = (wFrac * 100) + '%';
+  });
+  document.getElementById('dbdcDcAmount').textContent = formatMoneyDbdc(dc.total);
+
+  // 30년차 도달 시 양방향 오버레이 — 각 패널에 상대편 그래프를 반투명으로 겹침
+  const overlayDb = document.getElementById('dbdcOverlayDb');
+  const overlayDc = document.getElementById('dbdcOverlayDc');
+  const overlayTank = document.getElementById('dbdcOverlayTank');
+  const overlayBlocksArea = document.getElementById('dbdcOverlayBlocks');
+  if (year === DBDC.years) {
+    // DC 패널 위에 깔리는 DB 직사각형 — 실제 DB 탱크와 동일한 크기/위치
+    overlayTank.style.width = (tankWFrac * 100) + '%';
+    overlayTank.style.height = tankH + 'px';
+    overlayDb.classList.add('show');
+    // DB 패널 위에 깔리는 DC 스택 — 실제 DC 블록과 동일한 너비 비율
+    overlayBlocksArea.innerHTML = '';
+    dc.blocks.forEach((b, idx) => {
+      const block = document.createElement('div');
+      block.className = 'dbdc-block';
+      if (idx === 0) block.classList.add('oldest');
+      const wFrac = Math.max(b.value / commonHorizScale, 0.04);
+      block.style.width = (wFrac * 100) + '%';
+      overlayBlocksArea.appendChild(block);
+    });
+    overlayDc.classList.add('show');
+  } else {
+    overlayDb.classList.remove('show');
+    overlayDc.classList.remove('show');
+  }
+
+  const maxOverall = Math.max(db.amount, dc.total, 1);
+  document.getElementById('dbdcCompareBarDb').style.width = (db.amount / maxOverall * 100) + '%';
+  document.getElementById('dbdcCompareBarDc').style.width = (dc.total / maxOverall * 100) + '%';
+  document.getElementById('dbdcCompareDb').textContent = formatMoneyDbdc(db.amount);
+  document.getElementById('dbdcCompareDc').textContent = formatMoneyDbdc(dc.total);
+
+  const diff = dc.total - db.amount;
+  const diffEl = document.getElementById('dbdcDiffValue');
+  const msgEl = document.getElementById('dbdcDiffMsg');
+  const gapBase = Math.max(db.amount, dc.total, 1);
+
+  if (year === 0) {
+    diffEl.textContent = '0원';
+    msgEl.innerHTML = '30년 빨리보기를 누르거나 슬라이더를 움직이면 두 방식의 차이가 함께 보입니다';
+  } else if (Math.abs(diff) < gapBase * 0.05) {
+    diffEl.textContent = '거의 같음';
+    msgEl.innerHTML = '이 시점에서는 DB와 DC가 큰 차이 없습니다<br>본인 상황과 회사 제도를 함께 봐야 합니다';
+  } else if (diff > 0) {
+    diffEl.textContent = '+ ' + formatMoneyDbdc(diff);
+    msgEl.innerHTML = `DC가 DB보다 <strong style="color:#F58220">${formatMoneyDbdc(diff)}</strong> 더 많음<br>운용 수익률이 임금상승률보다 강한 시나리오`;
+  } else {
+    diffEl.textContent = '+ ' + formatMoneyDbdc(-diff);
+    msgEl.innerHTML = `DB가 DC보다 <strong style="color:#F58220">${formatMoneyDbdc(-diff)}</strong> 더 많음<br>임금이 꾸준히 오르는 시나리오에선 DB도 강력`;
+  }
+}
+
+function nextDbdcStage() {
+  playDbdcTimeline();
+}
+
+function initDbdc() {
+  const slider = document.getElementById('dbdcSlider');
+  slider.addEventListener('input', e => {
+    stopDbdcTimeline();
+    const playBtn = document.getElementById('dbdcPlayBtn');
+    if (playBtn) playBtn.textContent = '30년 빨리보기';
+    updateDbdcVisuals(parseInt(e.target.value));
+  });
+
+  // 시나리오 토글 — 클릭 시 시나리오 전환 + 같은 연차로 재렌더
+  const toggle = document.getElementById('dbdcScenarioToggle');
+  if (toggle) {
+    toggle.querySelectorAll('.dbdc-scenario-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const scenario = btn.dataset.scenario;
+        if (scenario === dbdcState.scenario) return;
+        stopDbdcTimeline();
+        dbdcState.scenario = scenario;
+        toggle.querySelectorAll('.dbdc-scenario-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const playBtn = document.getElementById('dbdcPlayBtn');
+        if (playBtn) playBtn.textContent = '30년 빨리보기';
+        updateDbdcVisuals(dbdcState.year);
+      });
+    });
+  }
+
+  renderDbdcStage();
+  updateDbdcVisuals(0);
+}
+
+// ============= 화면 6: 시뮬레이터 =============
+function initSimulator() {
+  document.querySelectorAll('[data-choice-group]').forEach(group => {
+    const btns = group.querySelectorAll('.sim-choice-btn');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if (btn.dataset.system) state.simSystem = btn.dataset.system;
+        if (btn.dataset.job) state.simJob = btn.dataset.job;
+        if (btn.dataset.years) state.simYears = parseInt(btn.dataset.years);
+        if (btn.dataset.mode) state.simMode = btn.dataset.mode;
+
+        updateSimResult();
+      });
+    });
+  });
+
+  updateSimResult();
+}
+
+// DC형 자산 (퇴직 시점)
+function calcSimDcValue(job, years, mode) {
+  const rate = SIM_MODE_RATE[mode];
+  const g = SIM_JOB_GROWTH[job];
+  let totalFV = 0;
+  for (let year = 1; year <= years; year++) {
+    const yearSalary = SIM_BASE_SALARY * Math.pow(1 + g, year - 1);
+    const contribution = yearSalary / 12;  // 매년 한 달치 적립
+    totalFV += contribution * Math.pow(1 + rate, years - year);
+  }
+  return Math.round(totalFV);
+}
+
+// DB형 자산 = 퇴직 전 월급 × 근속연수
+function calcSimDbValue(job, years) {
+  const g = SIM_JOB_GROWTH[job];
+  const finalMonthly = (SIM_BASE_SALARY / 12) * Math.pow(1 + g, years - 1);
+  return Math.round(finalMonthly * years);
+}
+
+function calcSimValue(system, job, years, mode) {
+  return system === 'db'
+    ? calcSimDbValue(job, years)
+    : calcSimDcValue(job, years, mode);
+}
+
+const SIM_JOB_LABEL = {
+  public: '공무원·공기업',
+  bigcorp: '대기업·금융',
+  sme: '중소·일반사무',
+  freelance: '자영업·프리랜서',
+};
+
+function modeLabel(mode) {
+  if (mode === 'passive') return '방치';
+  if (mode === 'active') return '적극 관리';
+  return '중간 관리';
+}
+
+function simActionText(system, mode) {
+  if (system === 'db') {
+    return '오늘 할 일: 근속 1년이 곧 자산 — 회사 임금 체계와 호봉 구조를 한 번 살펴보기';
+  }
+  if (mode === 'passive') return '오늘 할 일: 방치 대신 디폴트옵션부터 등록하기';
+  if (mode === 'active') return '오늘 할 일: 장기 분산투자 상품을 한 번 비교해보기';
+  return '오늘 할 일: 디폴트옵션 위험등급을 한 번만 등록해두기';
+}
+
+function syncSimButtons() {
+  document.querySelectorAll('[data-system]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.system === state.simSystem);
+  });
+  document.querySelectorAll('[data-job]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.job === state.simJob);
+  });
+  document.querySelectorAll('[data-years]').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.years) === state.simYears);
+  });
+  document.querySelectorAll('[data-mode]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === state.simMode);
+  });
+
+  // DB 선택 시 DC 운용 섹션 비활성화
+  const modeSection = document.getElementById('simModeSection');
+  if (modeSection) {
+    modeSection.classList.toggle('disabled', state.simSystem === 'db');
+  }
+}
+
+function updateSimResult() {
+  const fvMan = calcSimValue(state.simSystem, state.simJob, state.simYears, state.simMode);
+  // 반대 제도 값
+  const altSystem = state.simSystem === 'db' ? 'dc' : 'db';
+  const altMan = calcSimValue(altSystem, state.simJob, state.simYears, state.simMode);
+  const diff = fvMan - altMan;
+
+  const systemLabel = state.simSystem === 'db' ? 'DB' : 'DC';
+  const modePart = state.simSystem === 'dc' ? ` · ${modeLabel(state.simMode)} 운용` : '';
+  document.getElementById('simResultLabel').textContent =
+    `${systemLabel} · ${SIM_JOB_LABEL[state.simJob]} · ${state.simYears}년${modePart}`;
+  document.getElementById('simResult').textContent = formatMoney(fvMan);
+
+  const altLabel = altSystem === 'db' ? 'DB' : 'DC';
+  let compareText;
+  if (Math.abs(diff) < fvMan * 0.03) {
+    compareText = `${altLabel}와 비슷한 수준`;
+  } else if (diff > 0) {
+    compareText = `${altLabel}였다면 ${formatMoney(diff)} 적었음`;
+  } else {
+    compareText = `${altLabel}였다면 +${formatMoney(-diff)}`;
+  }
+  document.getElementById('simCompare').textContent = compareText;
+  document.getElementById('simAction').textContent = simActionText(state.simSystem, state.simMode);
+
+  syncSimButtons();
+
+  const el = document.getElementById('simResult');
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+
+  state.finalMoney = fvMan;
+}
+
+// ============= 화면 6: OX 퀴즈 =============
+const oxQuestions = [
+  {
+    q: 'DC에서 DB로 전환은 자유롭게 할 수 있다',
+    answer: false,
+    explain: '일방통행입니다. DB→DC는 가능하지만 그 반대는 사실상 불가능합니다.'
+  },
+  {
+    q: '퇴직연금은 회사가 망해도 안전하다',
+    answer: true,
+    explain: '퇴직연금은 외부 금융기관에 적립되기 때문에 회사 부도와 무관하게 보호됩니다.'
+  },
+  {
+    q: '퇴직연금 적립금의 87.2%가 원리금보장형에 머물러 있다',
+    answer: true,
+    explain: '고용노동부·금융감독원 통계입니다. 많은 돈이 원리금보장형에 머물러 있어 한 번쯤 운용 상태를 확인할 필요가 있습니다.'
+  },
+  {
+    q: '디폴트옵션은 자동이라 가입자가 할 일이 없다',
+    answer: false,
+    explain: '한 번은 본인이 위험등급을 선택해 등록해야 합니다. 그 한 번의 선택이 30년 결과를 결정합니다.'
+  },
+  {
+    q: 'IRP에 납입한 돈은 55세까지 자유롭게 꺼낼 수 없다',
+    answer: true,
+    explain: 'IRP는 장기 노후자금 성격이 강합니다. 중도 인출 시 세액공제 받은 금액에 기타소득세 16.5%가 부과될 수 있습니다.'
+  }
+];
+
+function renderOX() {
+  const q = oxQuestions[state.oxIndex];
+  document.getElementById('oxQ').textContent = q.q;
+  document.getElementById('oxStep').textContent = state.oxIndex + 1;
+
+  const dots = document.querySelectorAll('#oxDots .quiz-dot');
+  dots.forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    if (i < state.oxIndex) d.classList.add('done');
+    else if (i === state.oxIndex) d.classList.add('active');
+  });
+
+  document.querySelectorAll('.ox-btn').forEach(b => {
+    b.classList.remove('correct', 'wrong');
+    b.disabled = false;
+  });
+  const ansReset = document.getElementById('oxAns');
+  ansReset.classList.remove('show', 'correct', 'wrong');
+  document.getElementById('oxNextBtn').style.display = 'none';
+  state.oxAnswered = false;
+}
+
+function answerOX(userAnswer) {
+  if (state.oxAnswered) return;
+  state.oxAnswered = true;
+
+  const q = oxQuestions[state.oxIndex];
+  const correct = userAnswer === q.answer;
+  if (correct) state.oxCorrect++;
+
+  const oBtn = document.querySelector('.ox-btn.o');
+  const xBtn = document.querySelector('.ox-btn.x');
+
+  // 정답 표시
+  if (q.answer) oBtn.classList.add('correct');
+  else xBtn.classList.add('correct');
+
+  // 오답이면 사용자가 누른 버튼에 wrong 표시
+  if (!correct) {
+    if (userAnswer) oBtn.classList.add('wrong');
+    else xBtn.classList.add('wrong');
+  }
+
+  oBtn.disabled = true;
+  xBtn.disabled = true;
+
+  document.getElementById('oxAnsLabel').textContent =
+    (correct ? '정답입니다' : '오답입니다') + ' · 정답: ' + (q.answer ? 'O' : 'X');
+  document.getElementById('oxAnsText').textContent = q.explain;
+  const ansEl = document.getElementById('oxAns');
+  ansEl.classList.remove('correct', 'wrong');
+  ansEl.classList.add(correct ? 'correct' : 'wrong');
+  ansEl.classList.add('show');
+
+  const nextBtn = document.getElementById('oxNextBtn');
+  if (state.oxIndex < oxQuestions.length - 1) {
+    nextBtn.textContent = '다음 문제 →';
+  } else {
+    nextBtn.textContent = '결과 보기 →';
+  }
+  nextBtn.style.display = 'block';
+}
+
+function nextOX() {
+  if (state.oxIndex < oxQuestions.length - 1) {
+    state.oxIndex++;
+    renderOX();
+  } else {
+    showFinal();
+    goTo(8);
+  }
+}
+
+// ============= 화면 8: 통합 결과 =============
+function showFinal() {
+  // 유형 결정 (DB/DC 결과 + OX 점수 조합)
+  const s = state.dbDcScore;
+  const quizScore = state.oxCorrect;
+
+  let type, system, primaryAction, emoji;
+  if (s >= 3) {
+    type = '안정 추구러';
+    emoji = '🛡️';
+    system = 'DB형';
+    primaryAction = '임금상승률과 장기근속 가능성 확인하기';
+  } else if (s <= -3) {
+    if (quizScore >= 4) {
+      type = '적극 운용러';
+      emoji = '🚀';
+      primaryAction = '디폴트옵션 위험등급 등록하기';
+    } else {
+      type = '도전 시작러';
+      emoji = '🌱';
+      primaryAction = '디폴트옵션부터 안전하게 등록하기';
+    }
+    system = 'DC형';
+  } else {
+    type = '균형 운용러';
+    emoji = '⚖️';
+    system = '회사 정책 따름';
+    primaryAction = '내 퇴직연금이 DB인지 DC인지 확인하기';
+  }
+
+  document.getElementById('finalType').textContent = type;
+  document.getElementById('finalEmoji').textContent = emoji;
+  document.getElementById('finalSystem').textContent = system;
+  document.getElementById('finalQuiz').textContent = quizScore + '/5';
+  document.getElementById('finalMoney').textContent = formatMoney(state.finalMoney || 13800);
+  document.getElementById('finalPrimaryAction').textContent = primaryAction;
+
+  // 3억(만원 단위 30,000) 소득공백 회수 메시지 — 화면 1의 훅과 연결
+  const assetMan = state.finalMoney || 13800;
+  const gapMan = 30000;
+  const gapEl = document.getElementById('finalGapMessage');
+  if (gapEl) {
+    if (assetMan >= gapMan * 1.5) {
+      const overMan = assetMan - gapMan;
+      gapEl.innerHTML = `여유롭게 메꾸고 <strong>+${formatMoney(overMan)}</strong> 남습니다`;
+    } else if (assetMan >= gapMan) {
+      const overMan = assetMan - gapMan;
+      gapEl.innerHTML = `메꾸고 <strong>+${formatMoney(overMan)}</strong> 남습니다`;
+    } else {
+      const coveredPct = Math.round(assetMan / gapMan * 100);
+      gapEl.innerHTML = `약 <strong>${coveredPct}%</strong>를 메꿉니다`;
+    }
+  }
+
+  // 결과 저장 (공유용)
+  state.finalType = type;
+}
+
+// ============= 공유 / 재시작 =============
+function shareResult() {
+  const text = `내 퇴직연금 유형: ${state.finalType}\n` +
+               `30년 후 예상 자산: ${formatMoney(state.finalMoney || 13800)}\n\n` +
+               `당신도 진단받아보세요`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: '내 퇴직연금 유형',
+      text: text,
+      url: window.location.href
+    }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text + '\n' + window.location.href)
+      .then(() => alert('결과가 복사되었어요. 친구에게 붙여넣기 해보세요'))
+      .catch(() => alert('공유 기능을 사용할 수 없어요'));
+  } else {
+    alert(text);
+  }
+}
+
+function restart() {
+  state.currentScreen = 1;
+  state.dbDcScore = 0;
+  state.quizAnswers = [];
+  state.simSystem = 'dc';
+  state.simJob = 'bigcorp';
+  state.simYears = 30;
+  state.simMode = 'default';
+  state.oxIndex = 0;
+  state.oxCorrect = 0;
+  state.oxAnswered = false;
+  currentQ = 0;
+
+  // 리셋
+  if (raceAnimationId) {
+    cancelAnimationFrame(raceAnimationId);
+    raceAnimationId = null;
+  }
+  document.getElementById('amt1').textContent = '0';
+  document.getElementById('amt2').textContent = '0';
+  document.getElementById('bar1').style.width = '0%';
+  document.getElementById('bar2').style.width = '0%';
+  document.getElementById('raceConclusion').classList.remove('show');
+  document.getElementById('raceNext').style.display = 'none';
+  document.getElementById('raceBtn').style.display = 'block';
+  document.getElementById('raceSkip').style.display = 'block';
+  document.getElementById('raceBtn').disabled = false;
+  document.getElementById('raceBtn').textContent = '빨리감기';
+  document.getElementById('raceYearText').textContent = '입사 직후 (26세)';
+
+  renderDbdcStage();
+  updateSimResult();
+
+  renderQuiz();
+  renderOX();
+  goTo(1);
+}
+
+// ============= 초기화 =============
+window.addEventListener('DOMContentLoaded', () => {
+  renderQuiz();
+  initDbdc();
+  initSimulator();
+  renderOX();
+  updateProgress();
+});
+</script>
+
+</body>
+</html>
