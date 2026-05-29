@@ -1386,7 +1386,7 @@
   .anno-col {
     display: flex; flex-direction: column;
     gap: 18px;
-    max-width: 460px;
+    max-width: 500px;
     justify-self: end;     /* 좌측은 폰 쪽으로 붙도록 */
     width: 100%;
     z-index: 2;
@@ -1421,7 +1421,7 @@
   }
   .anno-card.is-active {
     opacity: 1;
-    max-height: 400px;
+    max-height: 520px;
     padding-top: 16px;
     padding-bottom: 16px;
     border-color: var(--card-border);
@@ -1441,13 +1441,13 @@
   .anno-col.right .anno-card::before { left: 0; }
 
   .anno-title {
-    font-size: 14px; font-weight: 700;
+    font-size: 22px; font-weight: 700;
     color: var(--navy);
     margin-bottom: 6px;
     letter-spacing: -0.2px;
   }
   .anno-body {
-    font-size: 13px; font-weight: 400;
+    font-size: 19px; font-weight: 400;
     color: var(--body);
     line-height: 1.55;
   }
@@ -1474,13 +1474,13 @@
     background: var(--orange);
   }
   .anno-card.variant-finale .anno-title {
-    font-size: 22px;
+    font-size: 26px;
     color: white;
     margin-bottom: 14px;
     letter-spacing: -0.4px;
   }
   .anno-card.variant-finale .anno-body {
-    font-size: 18px;
+    font-size: 22px;
     color: rgba(255, 255, 255, 0.85);
     line-height: 1.6;
   }
@@ -3381,7 +3381,7 @@
         <div class="cards-wrap">
           <div class="cards">
             <div class="card">
-              <div class="card-label">자체 설문 · 42명</div>
+              <div class="card-label">자체 설문 · 58명</div>
               <div class="card-title">어디서 이해가 막혔는가</div>
               <div class="card-body">
                 <div class="stats">
@@ -3400,7 +3400,7 @@
                     </div>
                   </div>
                   <div class="stat">
-                    <div class="num">59.5<span class="pct">%</span></div>
+                    <div class="num">69.5<span class="pct">%</span></div>
                     <div>
                       <div class="label-main">내 퇴직연금 확인 방법을 모름</div>
                       <div class="label-sub">이해가 행동으로 연결되지 않음</div>
@@ -3440,7 +3440,7 @@
             <span class="em-soft">무엇을 설명할 것인가</span>뿐만 아니라, <span class="em">어떻게 전달할 것인가</span> 역시 핵심 과제였습니다
           </div>
           <div class="sources">
-            Sources: CFPB, Effective Financial Education (2017) · Fernandes, Lynch &amp; Netemeyer, Management Science (2014) · 자체 설문 42명
+            Sources: CFPB, Effective Financial Education (2017) · Fernandes, Lynch &amp; Netemeyer, Management Science (2014) · 자체 설문 58명
           </div>
         </div>
       </div>
@@ -3637,7 +3637,7 @@
         <div class="head">
           <div class="section-label">03-2 · EVIDENCE <span class="ko">근거</span></div>
           <h2 class="title">디자인 결정의 근거</h2>
-          <div class="lead">자체 설문 42명 응답 · 신입·주니어 직장인 대상</div>
+          <div class="lead">자체 설문 58명 응답 · 신입·주니어 직장인 대상</div>
         </div>
 
         <div class="content-wrap">
@@ -3678,7 +3678,7 @@
 
             <div class="insight-stack">
               <div class="insight">
-                <div class="insight-num">59.5<span class="pct">%</span></div>
+                <div class="insight-num">69.5<span class="pct">%</span></div>
                 <div class="insight-text">
                   <div class="insight-quote">"내 퇴직연금 어디 있는지 모름"</div>
                   <div class="insight-reason"><span class="arrow">→</span> 콘텐츠의 즉시 진단 기능이 필요한 이유</div>
@@ -4290,7 +4290,7 @@
       <div class="final-header">
         <div class="final-emoji" id="finalEmoji" aria-hidden="true">🎯</div>
         <div class="final-type-badge" id="finalGrade">YOUR TYPE</div>
-        <div class="final-type" id="finalType">탐색 운용러</div>
+        <div class="final-type" id="finalType">투자탐험가</div>
         <div class="final-type-reason" id="finalTypeReason">아직 한쪽으로 기울지 않았어요</div>
       </div>
 
@@ -4527,10 +4527,15 @@ const SIM_BASE_SALARY = 3000;  // 만원, 모든 시나리오 공통 초봉
 
 // ============= 진도 업데이트 =============
 function updateProgress() {
-  const pct = (state.currentScreen / state.totalScreens) * 100;
+  // 데모 진행 순서(DEMO_ORDER)와 화면 id가 다르므로, 순서상 위치로 단계·진행률을 계산한다
+  const order = (typeof DEMO_ORDER !== 'undefined') ? DEMO_ORDER : null;
+  const idx = order ? order.indexOf(state.currentScreen) : -1;
+  const step = idx >= 0 ? idx + 1 : state.currentScreen;
+  const total = (order ? order.length : state.totalScreens) || 8;
+  const pct = (step / total) * 100;
   document.getElementById('progressFill').style.width = pct + '%';
   const stepEl = document.getElementById('stepNum');
-  if (stepEl) stepEl.textContent = state.currentScreen;
+  if (stepEl) stepEl.textContent = step;
 }
 
 // ============= 화면 전환 =============
@@ -5401,7 +5406,7 @@ function showFinal() {
   const ACTION_DEFAULT_REVIEW = ['디폴트옵션 위험등급 재검토', '6개월에 한 번, 시장 변화에 맞춰 등급 점검'];
 
   if (s >= 2) {
-    type = '안정 추구러';
+    type = '원금수호자';
     emoji = '🛡️';
     system = 'DB형';
     primaryAction = '임금상승률과 장기근속 가능성 확인하기';
@@ -5411,7 +5416,7 @@ function showFinal() {
     typeReason = '안정과 장기 근속을 중요하게 보는 성향입니다';
   } else if (s <= -2) {
     if (quizScore >= 4) {
-      type = '적극 운용러';
+      type = '스마트자산가';
       emoji = '🚀';
       primaryAction = '디폴트옵션 위험등급 등록하기';
       primaryHow = '퇴직연금 가입 증권사 앱 > 디폴트옵션 메뉴에서 위험등급 선택';
@@ -5419,7 +5424,7 @@ function showFinal() {
       [secondary2, secondary2How] = ACTION_DEFAULT_REVIEW;
       typeReason = `운용 의지와 기초 지식(${quizScore}/5)이 모두 갖춰져 있습니다`;
     } else {
-      type = '도전 시작러';
+      type = '재테크 스타터';
       emoji = '🌱';
       primaryAction = '디폴트옵션부터 안전하게 등록하기';
       primaryHow = '퇴직연금 가입 증권사 앱에서 저위험 등급으로 시작';
@@ -5429,7 +5434,7 @@ function showFinal() {
     }
     system = 'DC형';
   } else {
-    type = '탐색 운용러';
+    type = '투자탐험가';
     emoji = '🧭';
     system = '회사 정책 확인';
     primaryAction = '내 퇴직연금이 DB인지 DC인지 확인하기';
