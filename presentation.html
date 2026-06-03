@@ -48,12 +48,12 @@
 
   .deck {
     width: 100vw; height: 100vh;
-    display: flex; align-items: center; justify-content: center;
     position: relative;
+    overflow: hidden;
   }
   .stage {
     width: 1920px; height: 1080px;
-    position: relative;
+    position: absolute; left: 50%; top: 50%;
     transform-origin: center center;
   }
 
@@ -6044,7 +6044,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const sx = vw / 1920;
     const sy = vh / 1080;
     const scale = Math.min(sx, sy);
-    stage.style.transform = `scale(${scale})`;
+    stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
   }
   window.addEventListener('resize', resizeStage);
   resizeStage();
